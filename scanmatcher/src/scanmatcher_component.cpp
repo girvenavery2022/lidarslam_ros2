@@ -18,7 +18,7 @@ ScanMatcherComponent::ScanMatcherComponent(const rclcpp::NodeOptions & options)
 
   declare_parameter("global_frame_id", "map");
   get_parameter("global_frame_id", global_frame_id_);
-  declare_parameter("robot_frame_id", "base_link");
+  declare_parameter("robot_frame_id", "base_footprint");
   get_parameter("robot_frame_id", robot_frame_id_);
   declare_parameter("odom_frame_id", "odom");
   get_parameter("odom_frame_id", odom_frame_id_);
@@ -270,7 +270,7 @@ void ScanMatcherComponent::initializePubSub()
   pose_pub_ = create_publisher<geometry_msgs::msg::PoseStamped>(
     "current_pose",
     rclcpp::QoS(10));
-  map_pub_ = create_publisher<sensor_msgs::msg::PointCloud2>("map", rclcpp::QoS(10));
+  map_pub_ = create_publisher<sensor_msgs::msg::PointCloud2>("map", rclcpp::QoS(10)); // change topic name map to SM_map
   map_array_pub_ =
     create_publisher<lidarslam_msgs::msg::MapArray>(
     "map_array", rclcpp::QoS(
@@ -386,7 +386,8 @@ void ScanMatcherComponent::publishMapAndPose(
   geometry_msgs::msg::TransformStamped transform_stamped;
   transform_stamped.header.stamp = stamp;
   transform_stamped.header.frame_id = global_frame_id_;
-  transform_stamped.child_frame_id = robot_frame_id_;
+  //transform_stamped.child_frame_id =  robot_frame_id_;  // fixed weird map & odom tf issues
+  transform_stamped.child_frame_id =  odom_frame_id_;
   transform_stamped.transform.translation.x = position.x();
   transform_stamped.transform.translation.y = position.y();
   transform_stamped.transform.translation.z = position.z();
